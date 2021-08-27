@@ -1,0 +1,83 @@
+#!/bin/bash
+
+#run by typing "PI_all_echam_fesom.job origdir startyear endyear dir"
+
+#get dir name
+origdir=$1
+startyear=$2
+endyear=$3
+dir=$4
+echo $origdir $startyear $endyear $dir
+if [ "$dir" = "" ]
+then
+  echo 'usage PI_all_echam_fesom.job origdir startyear endyear dir'
+  echo 'origdir: directory in which the original data are stored'
+  echo 'dir: directory in which calculation should be performed'
+  echo 'and output data stored'
+  exit
+fi
+
+numyearm1=`expr ${endyear} - ${startyear}`
+echo $numyearm1
+numyear=`expr ${numyearm1} + 1`
+echo $numyear
+nummon=`expr ${numyear} \* 12`
+echo $nummon
+
+./prep_for_tidos_scripts.sh $origdir
+
+#change to dir where output data are stored.
+mkdir -p $dir
+cd $dir
+
+for var in SICE T2M TCC TP TTR U10M V10M U_300 GEOPOT_500
+do
+
+for season in DJF MAM JJA SON
+do
+
+cdo -f grb copy ${origdir}/${var}_${startyear}_${endyear}_avg_${season}.nc ${season}_mean_${var}.grb
+cdo gradsdes ${season}_mean_${var}.grb
+
+if [ "$var" = "TTR" ]
+then
+cdo -f grb divc,-21600. ${origdir}/${var}_${startyear}_${endyear}_avg_${season}.nc ${season}_mean_${var}.grb
+cdo gradsdes ${season}_mean_${var}.grb
+fi
+
+if [ "$var" = "TCC" ] || [ "${var}" = "SICE" ]
+then
+cdo -f grb mulc,100. ${origdir}/${var}_${startyear}_${endyear}_avg_${season}.nc ${season}_mean_${var}.grb
+cdo gradsdes ${season}_mean_${var}.grb
+fi
+
+if [ "$var" = "TP" ]
+then
+cdo -f grb mulc,4000. ${origdir}/${var}_${startyear}_${endyear}_avg_${season}.nc ${season}_mean_${var}.grb
+cdo gradsdes ${season}_mean_${var}.grb
+fi
+
+cat >${season}_mean_${var}.ctl <<EOF1
+DSET  ^${season}_mean_${var}.grb
+DTYPE GRIB
+INDEX ^${season}_mean_${var}.gmp
+XDEF 180 LINEAR 0.000000 2.000000
+YDEF 91 LINEAR -90.000000 2.000000
+ZDEF 1 LEVELS 5
+TDEF 1 LINEAR 00:00Z01jan1990 1mo
+TITLE  $va from coupled model
+UNDEF  -9e+33
+VARS  1
+$var         1  228,1000  results from coupled model 1
+ENDVARS
+EOF1
+
+done
+done
+
+cp /work/ollie/jstreffi/postprocessing/PI_oifs_fesom.job .
+cp /work/ollie/jstreffi/postprocessing/PI_oifs_fesom_sic.job .
+
+./PI_oifs_fesom.job
+./PI_oifs_fesom_sic.job
+

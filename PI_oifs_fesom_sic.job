@@ -1,0 +1,65 @@
+#!/bin/csh
+
+set xx=(SICE)
+
+set name = (OSISAF)
+set var  = (sic)
+set varm = (var1)
+
+foreach sss (DJF MAM JJA SON)
+foreach iv (1)
+set va = $var[$iv]
+set vm = $varm[$iv]
+set yy = $xx[$iv]
+echo $va
+echo $yy
+
+ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_nh_$sss.ctl .
+ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_nh_$sss.gmp .
+ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_nh_$sss.grb .
+
+ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_sh_$sss.ctl .
+ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_sh_$sss.gmp .
+ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_sh_$sss.grb .
+
+cat > PI_${var[$iv]}_$sss.gs <<====
+"open ${sss}_mean_${yy}.ctl"
+"open climate_$name[$iv]_${va}_nh_$sss.ctl"
+"open climate_$name[$iv]_${va}_sh_$sss.ctl"
+"define meanmod=${yy}.1(t=1)"
+"define meanobsnh=${vm}.2(t=1)"
+"define meanobssh=${vm}.3(t=1)"
+"define absnh=sqrt((meanmod-meanobsnh)*(meanmod-meanobsnh))"
+"define abssh=sqrt((meanmod-meanobssh)*(meanmod-meanobssh))"
+
+"d aave(abssh, lon=0,lon=360,lat=-90,lat=-40)"
+say result
+xantarctic=subwrd(result,4)
+
+"d aave(absnh, lon=0,lon=360,lat=40,lat=90)"
+say result
+xarctic=subwrd(result,4)
+
+begin = $sss
+say begin
+if (begin=DJF)
+"!echo $va $sss "xantarctic" > PI_antarctic_sic.txt"
+"!echo $va $sss "xarctic" > PI_arctic_sic.txt"
+else
+"!echo $va $sss "xantarctic" >> PI_antarctic_sic.txt"
+"!echo $va $sss "xarctic" >> PI_arctic_sic.txt"
+endif
+quit
+====
+
+echo $va
+grads -blc "run ./PI_${va}_${sss}.gs"
+#rm -f climate_${name[$iv]}_$va.ctl 
+#rm -f climate_${name[$iv]}_$va.grads 
+#rm -f ${name[$iv]}_variance_$va.ctl 
+#rm -f ${name[$iv]}_variance_$va.grads 
+
+end
+end
+
+

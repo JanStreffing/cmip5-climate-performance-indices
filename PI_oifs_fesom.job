@@ -1,0 +1,103 @@
+#!/bin/csh
+
+set xx=(T2M TCC TP TTR U10M V10M GEOPOT_500 U_300)
+
+set name = (ERA40 MODIS GPCP CERES ERA40 ERA40 ERA40 ERA40)
+set var  = (t2m   clt   pr   rlut  u10m  v10m  geopot_500 u_300)
+set varm = (var167 var1 var1 var1  var165 var166 var129 var131)
+
+foreach sss (DJF MAM JJA SON)
+foreach iv (1 2 3 4 5 6 7 8)
+set va = $var[$iv]
+set vm = $varm[$iv]
+set yy = $xx[$iv]
+echo $va
+echo $yy
+
+ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_$sss.ctl .
+ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_$sss.gmp .
+ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_$sss.grb .
+cdo -f nc copy climate_${name[$iv]}_${va}_$sss.grb climate_${name[$iv]}_${va}_$sss.nc
+
+cat > PI_${var[$iv]}_$sss.gs <<====
+"open ${sss}_mean_${yy}.ctl"
+"open climate_$name[$iv]_${va}_$sss.ctl"
+"define meanmod=${yy}.1(t=1)"
+"define meanobs=${vm}.2(t=1)"
+"define abs=sqrt((meanmod-meanobs)*(meanmod-meanobs))"
+
+"d aave(abs, lon=0,lon=360,lat=-90,lat=90)"
+say result
+x=subwrd(result,4)
+
+"d aave(abs, lon=0,lon=360,lat=-30,lat=30)"
+say result
+xtropics=subwrd(result,4)
+
+"d aave(abs, lon=0,lon=360,lat=-15,lat=15)"
+say result
+xinnertr=subwrd(result,4)
+
+"d aave(abs, lon=0,lon=360,lat=-90,lat=-60)"
+say result
+xantarctic=subwrd(result,4)
+
+"d aave(abs, lon=0,lon=360,lat=-60,lat=-30)"
+say result
+xsouthmid=subwrd(result,4)
+
+"d aave(abs, lon=0,lon=360,lat=60,lat=90)"
+say result
+xarctic=subwrd(result,4)
+
+"d aave(abs, lon=0,lon=360,lat=30,lat=60)"
+say result
+xnorthmid=subwrd(result,4)
+
+begin1 = $iv
+begin2 = $sss
+say begin1
+say begin2
+if (begin1=1)
+if (begin2=DJF)
+"!echo $va $sss "x" > PI.txt"
+"!echo $va $sss "xtropics" > PI_tropics.txt"
+"!echo $va $sss "xinnertr" > PI_innertr.txt"
+"!echo $va $sss "xantarctic" > PI_antarctic.txt"
+"!echo $va $sss "xsouthmid" > PI_southmid.txt"
+"!echo $va $sss "xarctic" > PI_arctic.txt"
+"!echo $va $sss "xnorthmid" > PI_northmid.txt"
+else
+"!echo $va $sss "x" >>PI.txt"
+"!echo $va $sss "xtropics" >>PI_tropics.txt"
+"!echo $va $sss "xinnertr" >>PI_innertr.txt"
+"!echo $va $sss "xantarctic" >>PI_antarctic.txt"
+"!echo $va $sss "xsouthmid" >>PI_southmid.txt"
+"!echo $va $sss "xarctic" >>PI_arctic.txt"
+"!echo $va $sss "xnorthmid" >>PI_northmid.txt"
+endif
+else
+"!echo $va $sss "x" >>PI.txt"
+"!echo $va $sss "xtropics" >>PI_tropics.txt"
+"!echo $va $sss "xinnertr" >>PI_innertr.txt"
+"!echo $va $sss "xantarctic" >>PI_antarctic.txt"
+"!echo $va $sss "xsouthmid" >>PI_southmid.txt"
+"!echo $va $sss "xarctic" >>PI_arctic.txt"
+"!echo $va $sss "xnorthmid" >>PI_northmid.txt"
+endif
+"!cat PI.txt"
+
+quit
+====
+
+echo $va
+grads -blc "run ./PI_${va}_${sss}.gs"
+#rm -f climate_${name[$iv]}_$va.ctl 
+#rm -f climate_${name[$iv]}_$va.grads 
+#rm -f ${name[$iv]}_variance_$va.ctl 
+#rm -f ${name[$iv]}_variance_$va.grads 
+
+end
+end
+
+
