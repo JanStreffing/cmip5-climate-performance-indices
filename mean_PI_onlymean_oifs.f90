@@ -1,4 +1,6 @@
 program meanpi
+!!! Original by Tido Semmler
+!!! With modifications from Jan Streffing
 
 !!! Now my PI programme PI.job gives not any longer the normalized squared error
 !!! as a second value. Instead the mean absolute error of the interannual
@@ -24,85 +26,92 @@ real :: ecfesnseall(numregions)           ! ECHAM-FESOM PI based on normalized s
 character*10 :: par(numpi+numpolpi)
 character*3 :: season(numpi+numpolpi)
 character*3 :: dummy
+character(len=4096) :: nmlfile, dir_in, dir_obs
 
-open (10,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI.txt',&
-FORM='formatted')
-open (11,FILE='/home/ollie/jstreffi/obsdata/GFDL-CM3_PI_SEMMLER_detrend/PI.txt',FORM='formatted')
-open (12,FILE='/home/ollie/jstreffi/obsdata/CCSM4_PI_SEMMLER_detrend/PI.txt',FORM='formatted')
-open (13,FILE='/home/ollie/jstreffi/obsdata/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI.txt',FORM='formatted')
-open (14,FILE='/home/ollie/jstreffi/obsdata/HadGEM2-ES_PI_SEMMLER_detrend/PI.txt',FORM='formatted')
-open (15,FILE='/home/ollie/jstreffi/obsdata/MIROC-ESM_PI_SEMMLER_detrend/PI.txt',FORM='formatted')
-open (16,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_tropics.txt',&
-FORM='formatted')
-open (17,FILE='/home/ollie/jstreffi/obsdata/GFDL-CM3_PI_SEMMLER_detrend/PI_tropics.txt',FORM='formatted')
-open (18,FILE='/home/ollie/jstreffi/obsdata/CCSM4_PI_SEMMLER_detrend/PI_tropics.txt',FORM='formatted')
-open (19,FILE='/home/ollie/jstreffi/obsdata/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_tropics.txt',FORM='formatted')
-open (20,FILE='/home/ollie/jstreffi/obsdata/HadGEM2-ES_PI_SEMMLER_detrend/PI_tropics.txt',FORM='formatted')
-open (21,FILE='/home/ollie/jstreffi/obsdata/MIROC-ESM_PI_SEMMLER_detrend/PI_tropics.txt',FORM='formatted')
-open (22,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_antarctic.txt',&
-FORM='formatted')
-open (23,FILE='/home/ollie/jstreffi/obsdata/GFDL-CM3_PI_SEMMLER_detrend/PI_antarctic.txt',FORM='formatted')
-open (24,FILE='/home/ollie/jstreffi/obsdata/CCSM4_PI_SEMMLER_detrend/PI_antarctic.txt',FORM='formatted')
-open (25,FILE='/home/ollie/jstreffi/obsdata/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_antarctic.txt',FORM='formatted')
-open (26,FILE='/home/ollie/jstreffi/obsdata/HadGEM2-ES_PI_SEMMLER_detrend/PI_antarctic.txt',FORM='formatted')
-open (27,FILE='/home/ollie/jstreffi/obsdata/MIROC-ESM_PI_SEMMLER_detrend/PI_antarctic.txt',FORM='formatted')
-open (28,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_southmid.txt',&
-FORM='formatted')
-open (29,FILE='/home/ollie/jstreffi/obsdata/GFDL-CM3_PI_SEMMLER_detrend/PI_southmid.txt',FORM='formatted')
-open (30,FILE='/home/ollie/jstreffi/obsdata/CCSM4_PI_SEMMLER_detrend/PI_southmid.txt',FORM='formatted')
-open (31,FILE='/home/ollie/jstreffi/obsdata/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_southmid.txt',FORM='formatted')
-open (32,FILE='/home/ollie/jstreffi/obsdata/HadGEM2-ES_PI_SEMMLER_detrend/PI_southmid.txt',FORM='formatted')
-open (33,FILE='/home/ollie/jstreffi/obsdata/MIROC-ESM_PI_SEMMLER_detrend/PI_southmid.txt',FORM='formatted')
-open (34,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_arctic.txt',&
-FORM='formatted')
-open (35,FILE='/home/ollie/jstreffi/obsdata/GFDL-CM3_PI_SEMMLER_detrend/PI_arctic.txt',FORM='formatted')
-open (36,FILE='/home/ollie/jstreffi/obsdata/CCSM4_PI_SEMMLER_detrend/PI_arctic.txt',FORM='formatted')
-open (37,FILE='/home/ollie/jstreffi/obsdata/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_arctic.txt',FORM='formatted')
-open (38,FILE='/home/ollie/jstreffi/obsdata/HadGEM2-ES_PI_SEMMLER_detrend/PI_arctic.txt',FORM='formatted')
-open (39,FILE='/home/ollie/jstreffi/obsdata/MIROC-ESM_PI_SEMMLER_detrend/PI_arctic.txt',FORM='formatted')
-open (40,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_northmid.txt',&
-FORM='formatted')
-open (41,FILE='/home/ollie/jstreffi/obsdata/GFDL-CM3_PI_SEMMLER_detrend/PI_northmid.txt',FORM='formatted')
-open (42,FILE='/home/ollie/jstreffi/obsdata/CCSM4_PI_SEMMLER_detrend/PI_northmid.txt',FORM='formatted')
-open (43,FILE='/home/ollie/jstreffi/obsdata/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_northmid.txt',FORM='formatted')
-open (44,FILE='/home/ollie/jstreffi/obsdata/HadGEM2-ES_PI_SEMMLER_detrend/PI_northmid.txt',FORM='formatted')
-open (45,FILE='/home/ollie/jstreffi/obsdata/MIROC-ESM_PI_SEMMLER_detrend/PI_northmid.txt',FORM='formatted')
-open (46,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_innertr.txt',&
-FORM='formatted')
-open (47,FILE='/home/ollie/jstreffi/obsdata/GFDL-CM3_PI_SEMMLER_detrend/PI_innertr.txt',FORM='formatted')
-open (48,FILE='/home/ollie/jstreffi/obsdata/CCSM4_PI_SEMMLER_detrend/PI_innertr.txt',FORM='formatted')
-open (49,FILE='/home/ollie/jstreffi/obsdata/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_innertr.txt',FORM='formatted')
-open (50,FILE='/home/ollie/jstreffi/obsdata/HadGEM2-ES_PI_SEMMLER_detrend/PI_innertr.txt',FORM='formatted')
-open (51,FILE='/home/ollie/jstreffi/obsdata/MIROC-ESM_PI_SEMMLER_detrend/PI_innertr.txt',FORM='formatted')
-open (52,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_arctic_sic.txt',&
-FORM='formatted')
-open (53,FILE='/home/ollie/jstreffi/obsdata/GFDL-CM3_PI_SEMMLER_detrend/PI_arctic_sic.txt',FORM='formatted')
-open (54,FILE='/home/ollie/jstreffi/obsdata/CCSM4_PI_SEMMLER_detrend/PI_arctic_sic.txt',FORM='formatted')
-open (55,FILE='/home/ollie/jstreffi/obsdata/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_arctic_sic.txt',FORM='formatted')
-open (56,FILE='/home/ollie/jstreffi/obsdata/HadGEM2-ES_PI_SEMMLER_detrend/PI_arctic_sic.txt',FORM='formatted')
-open (57,FILE='/home/ollie/jstreffi/obsdata/MIROC-ESM_PI_SEMMLER_detrend/PI_arctic_sic.txt',FORM='formatted')
-open (58,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_antarctic_sic.txt',&
-FORM='formatted')
-open (59,FILE='/home/ollie/jstreffi/obsdata/GFDL-CM3_PI_SEMMLER_detrend/PI_antarctic_sic.txt',FORM='formatted')
-open (60,FILE='/home/ollie/jstreffi/obsdata/CCSM4_PI_SEMMLER_detrend/PI_antarctic_sic.txt',FORM='formatted')
-open (61,FILE='/home/ollie/jstreffi/obsdata/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_antarctic_sic.txt',FORM='formatted')
-open (62,FILE='/home/ollie/jstreffi/obsdata/HadGEM2-ES_PI_SEMMLER_detrend/PI_antarctic_sic.txt',FORM='formatted')
-open (63,FILE='/home/ollie/jstreffi/obsdata/MIROC-ESM_PI_SEMMLER_detrend/PI_antarctic_sic.txt',FORM='formatted')
+nmlfile ='namelist.nml'
+open (20,file=nmlfile)
+read (20,NML=config)
+NAMELIST /config/ dir_in, dir_obs
+close (20)
 
-open (200,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_norm.txt',&
+open (10,FILE=TRIM(dir_in)//'/PI.txt',&
 FORM='formatted')
-open (201,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_tropics_norm.txt',&
+open (11,FILE=TRIM(dir_obs)//'/GFDL-CM3_PI_SEMMLER_detrend/PI.txt',FORM='formatted')
+open (12,FILE=TRIM(dir_obs)//'/CCSM4_PI_SEMMLER_detrend/PI.txt',FORM='formatted')
+open (13,FILE=TRIM(dir_obs)//'/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI.txt',FORM='formatted')
+open (14,FILE=TRIM(dir_obs)//'/HadGEM2-ES_PI_SEMMLER_detrend/PI.txt',FORM='formatted')
+open (15,FILE=TRIM(dir_obs)//'/MIROC-ESM_PI_SEMMLER_detrend/PI.txt',FORM='formatted')
+open (16,FILE=TRIM(dir_in)//'/PI_tropics.txt',&
+FORM='formatted')
+open (17,FILE=TRIM(dir_obs)//'/GFDL-CM3_PI_SEMMLER_detrend/PI_tropics.txt',FORM='formatted')
+open (18,FILE=TRIM(dir_obs)//'/CCSM4_PI_SEMMLER_detrend/PI_tropics.txt',FORM='formatted')
+open (19,FILE=TRIM(dir_obs)//'/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_tropics.txt',FORM='formatted')
+open (20,FILE=TRIM(dir_obs)//'/HadGEM2-ES_PI_SEMMLER_detrend/PI_tropics.txt',FORM='formatted')
+open (21,FILE=TRIM(dir_obs)//'/MIROC-ESM_PI_SEMMLER_detrend/PI_tropics.txt',FORM='formatted')
+open (22,FILE=TRIM(dir_in)//'/PI_antarctic.txt',&
+FORM='formatted')
+open (23,FILE=TRIM(dir_obs)//'/GFDL-CM3_PI_SEMMLER_detrend/PI_antarctic.txt',FORM='formatted')
+open (24,FILE=TRIM(dir_obs)//'/CCSM4_PI_SEMMLER_detrend/PI_antarctic.txt',FORM='formatted')
+open (25,FILE=TRIM(dir_obs)//'/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_antarctic.txt',FORM='formatted')
+open (26,FILE=TRIM(dir_obs)//'/HadGEM2-ES_PI_SEMMLER_detrend/PI_antarctic.txt',FORM='formatted')
+open (27,FILE=TRIM(dir_obs)//'/MIROC-ESM_PI_SEMMLER_detrend/PI_antarctic.txt',FORM='formatted')
+open (28,FILE=TRIM(dir_in)//'/PI_southmid.txt',&
+FORM='formatted')
+open (29,FILE=TRIM(dir_obs)//'/GFDL-CM3_PI_SEMMLER_detrend/PI_southmid.txt',FORM='formatted')
+open (30,FILE=TRIM(dir_obs)//'/CCSM4_PI_SEMMLER_detrend/PI_southmid.txt',FORM='formatted')
+open (31,FILE=TRIM(dir_obs)//'/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_southmid.txt',FORM='formatted')
+open (32,FILE=TRIM(dir_obs)//'/HadGEM2-ES_PI_SEMMLER_detrend/PI_southmid.txt',FORM='formatted')
+open (33,FILE=TRIM(dir_obs)//'/MIROC-ESM_PI_SEMMLER_detrend/PI_southmid.txt',FORM='formatted')
+open (34,FILE=TRIM(dir_in)//'/PI_arctic.txt',&
+FORM='formatted')
+open (35,FILE=TRIM(dir_obs)//'/GFDL-CM3_PI_SEMMLER_detrend/PI_arctic.txt',FORM='formatted')
+open (36,FILE=TRIM(dir_obs)//'/CCSM4_PI_SEMMLER_detrend/PI_arctic.txt',FORM='formatted')
+open (37,FILE=TRIM(dir_obs)//'/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_arctic.txt',FORM='formatted')
+open (38,FILE=TRIM(dir_obs)//'/HadGEM2-ES_PI_SEMMLER_detrend/PI_arctic.txt',FORM='formatted')
+open (39,FILE=TRIM(dir_obs)//'/MIROC-ESM_PI_SEMMLER_detrend/PI_arctic.txt',FORM='formatted')
+open (40,FILE=TRIM(dir_in)//'/PI_northmid.txt',&
+FORM='formatted')
+open (41,FILE=TRIM(dir_obs)//'/GFDL-CM3_PI_SEMMLER_detrend/PI_northmid.txt',FORM='formatted')
+open (42,FILE=TRIM(dir_obs)//'/CCSM4_PI_SEMMLER_detrend/PI_northmid.txt',FORM='formatted')
+open (43,FILE=TRIM(dir_obs)//'/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_northmid.txt',FORM='formatted')
+open (44,FILE=TRIM(dir_obs)//'/HadGEM2-ES_PI_SEMMLER_detrend/PI_northmid.txt',FORM='formatted')
+open (45,FILE=TRIM(dir_obs)//'/MIROC-ESM_PI_SEMMLER_detrend/PI_northmid.txt',FORM='formatted')
+open (46,FILE=TRIM(dir_in)//'/PI_innertr.txt',&
+FORM='formatted')
+open (47,FILE=TRIM(dir_obs)//'/GFDL-CM3_PI_SEMMLER_detrend/PI_innertr.txt',FORM='formatted')
+open (48,FILE=TRIM(dir_obs)//'/CCSM4_PI_SEMMLER_detrend/PI_innertr.txt',FORM='formatted')
+open (49,FILE=TRIM(dir_obs)//'/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_innertr.txt',FORM='formatted')
+open (50,FILE=TRIM(dir_obs)//'/HadGEM2-ES_PI_SEMMLER_detrend/PI_innertr.txt',FORM='formatted')
+open (51,FILE=TRIM(dir_obs)//'/MIROC-ESM_PI_SEMMLER_detrend/PI_innertr.txt',FORM='formatted')
+open (52,FILE=TRIM(dir_in)//'/PI_arctic_sic.txt',&
+FORM='formatted')
+open (53,FILE=TRIM(dir_obs)//'/GFDL-CM3_PI_SEMMLER_detrend/PI_arctic_sic.txt',FORM='formatted')
+open (54,FILE=TRIM(dir_obs)//'/CCSM4_PI_SEMMLER_detrend/PI_arctic_sic.txt',FORM='formatted')
+open (55,FILE=TRIM(dir_obs)//'/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_arctic_sic.txt',FORM='formatted')
+open (56,FILE=TRIM(dir_obs)//'/HadGEM2-ES_PI_SEMMLER_detrend/PI_arctic_sic.txt',FORM='formatted')
+open (57,FILE=TRIM(dir_obs)//'/MIROC-ESM_PI_SEMMLER_detrend/PI_arctic_sic.txt',FORM='formatted')
+open (58,FILE=TRIM(dir_in)//'/PI_antarctic_sic.txt',&
+FORM='formatted')
+open (59,FILE=TRIM(dir_obs)//'/GFDL-CM3_PI_SEMMLER_detrend/PI_antarctic_sic.txt',FORM='formatted')
+open (60,FILE=TRIM(dir_obs)//'/CCSM4_PI_SEMMLER_detrend/PI_antarctic_sic.txt',FORM='formatted')
+open (61,FILE=TRIM(dir_obs)//'/ECHAM_MPIOM_LR_PI_SEMMLER_detrend/PI_antarctic_sic.txt',FORM='formatted')
+open (62,FILE=TRIM(dir_obs)//'/HadGEM2-ES_PI_SEMMLER_detrend/PI_antarctic_sic.txt',FORM='formatted')
+open (63,FILE=TRIM(dir_obs)//'/MIROC-ESM_PI_SEMMLER_detrend/PI_antarctic_sic.txt',FORM='formatted')
+
+open (200,FILE=TRIM(dir_in)//'/PI_norm.txt',&
+FORM='formatted')
+open (201,FILE=TRIM(dir_in)//'/PI_tropics_norm.txt',&
 FORM='formatted')
 open (202,FILE=&
-'/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_antarctic_norm.txt',&
+TRIM(dir_in)//'/PI_antarctic_norm.txt',&
 FORM='formatted')
-open (203,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_southmid_norm.txt',&
+open (203,FILE=TRIM(dir_in)//'/PI_southmid_norm.txt',&
 FORM='formatted')
-open (204,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_arctic_norm.txt',&
+open (204,FILE=TRIM(dir_in)//'/PI_arctic_norm.txt',&
 FORM='formatted')
-open (205,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_northmid_norm.txt',&
+open (205,FILE=TRIM(dir_in)//'/PI_northmid_norm.txt',&
 FORM='formatted')
-open (206,FILE='/work/ollie/jstreffi/runtime/awicm-3.1/BASE/outdata/oifs/monmean/output/PI_innertr_norm.txt',&
+open (206,FILE=TRIM(dir_in)//'/PI_innertr_norm.txt',&
 FORM='formatted')
 
 numfiles=nummodel*numregions

@@ -5,16 +5,16 @@
 # Author: Jan Streffing 2019-01-21					     #
 ##############################################################################
 
-origdir=$1 # e.g. /p/scratch/chhb19/jstreffi/runtime/awicm-3.1/PICT/
+origdir=$1 # e.g. /p/scratch/chhb19/jstreffi/runtime/awicm-3.1/PICT/outdata/oifs/links
 
-cd $origdir/outdata/oifs/links
+cd $origdir
 printf "#################################"
 pwd
 printf "#################################"
 
 for i in `seq 10 11`;
 do
-	for var in CI T2M TTR TCC CP LSP TTR U10M V10M U V Z;
+	for var in CI T2M TTR TCC CP LSP U10M V10M U V Z;
 	do
 		printf "working on", $var
 		cdo cat ${var}_$(printf "%05d" $i).nc ${var}_analysis_period.nc
@@ -28,7 +28,7 @@ cdo chname,TCC,aclcov TCC_analysis_period_remap.nc TCC.nc
 cdo chname,LSP,CP LSP_analysis_period_remap.nc LSP_r.nc
 cdo add CP_analysis_period_remap.nc LSP_r.nc TP_t.nc
 cdo chname,CP,aprc TP_t.nc TP.nc
-cdo chname,TTR,trad0 TTR_analysis_period_remap.nc TRR.nc
+cdo chname,TTR,trad0 TTR_analysis_period_remap.nc TTR.nc
 cdo chname,U10M,u10 U10M_analysis_period_remap.nc U10M.nc
 cdo chname,V10M,v10 V10M_analysis_period_remap.nc V10M.nc
 cdo chname,U,var131 U_analysis_period_remap.nc var131.nc

@@ -1,0 +1,4 @@
+&config
+	dir_in = '/p/scratch/chhb19/jstreffi/runtime/awicm-3.1/PICT/outdata/oifs/climate_performance_indicies/'
+	dir_obs= '/p/project/chhb19/streffing1/postprocessing/climatologies/'
+/

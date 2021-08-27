@@ -1,5 +1,7 @@
 #!/bin/csh
 
+set obsdir=$1
+
 set xx=(SICE)
 
 set name = (OSISAF)
@@ -14,13 +16,13 @@ set yy = $xx[$iv]
 echo $va
 echo $yy
 
-ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_nh_$sss.ctl .
-ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_nh_$sss.gmp .
-ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_nh_$sss.grb .
+ln -s  $obsdir/climate_${name[$iv]}_${va}_nh_$sss.ctl .
+ln -s  $obsdir/climate_${name[$iv]}_${va}_nh_$sss.gmp .
+ln -s  $obsdir/climate_${name[$iv]}_${va}_nh_$sss.grb .
 
-ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_sh_$sss.ctl .
-ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_sh_$sss.gmp .
-ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_sh_$sss.grb .
+ln -s  $obsdir/climate_${name[$iv]}_${va}_sh_$sss.ctl .
+ln -s  $obsdir/climate_${name[$iv]}_${va}_sh_$sss.gmp .
+ln -s  $obsdir/climate_${name[$iv]}_${va}_sh_$sss.grb .
 
 cat > PI_${var[$iv]}_$sss.gs <<====
 "open ${sss}_mean_${yy}.ctl"
@@ -53,7 +55,7 @@ quit
 ====
 
 echo $va
-grads -blc "run ./PI_${va}_${sss}.gs"
+#grads -blc "run ./PI_${va}_${sss}.gs"
 #rm -f climate_${name[$iv]}_$va.ctl 
 #rm -f climate_${name[$iv]}_$va.grads 
 #rm -f ${name[$iv]}_variance_$va.ctl 

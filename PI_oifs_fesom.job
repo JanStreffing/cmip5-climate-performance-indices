@@ -1,5 +1,7 @@
 #!/bin/csh
 
+set obsdir=$1
+
 set xx=(T2M TCC TP TTR U10M V10M GEOPOT_500 U_300)
 
 set name = (ERA40 MODIS GPCP CERES ERA40 ERA40 ERA40 ERA40)
@@ -14,9 +16,9 @@ set yy = $xx[$iv]
 echo $va
 echo $yy
 
-ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_$sss.ctl .
-ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_$sss.gmp .
-ln -s  /home/ollie/tsemmler/PI/Climate_obs_data_SEMMLER/climate_${name[$iv]}_${va}_$sss.grb .
+ln -s  $obsdir/climate_${name[$iv]}_${va}_$sss.ctl .
+ln -s  $obsdir/climate_${name[$iv]}_${va}_$sss.gmp .
+ln -s  $obsdir/climate_${name[$iv]}_${va}_$sss.grb .
 cdo -f nc copy climate_${name[$iv]}_${va}_$sss.grb climate_${name[$iv]}_${va}_$sss.nc
 
 cat > PI_${var[$iv]}_$sss.gs <<====

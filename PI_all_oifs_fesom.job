@@ -7,7 +7,8 @@ origdir=$1
 startyear=$2
 endyear=$3
 dir=$4
-echo $origdir $startyear $endyear $dir
+obsdir=$5
+echo $origdir $startyear $endyear $dir $obsdir
 if [ "$dir" = "" ]
 then
   echo 'usage PI_all_echam_fesom.job origdir startyear endyear dir'
@@ -16,6 +17,8 @@ then
   echo 'and output data stored'
   exit
 fi
+#example: ./PI_all_oifs_fesom.job /p/scratch/chhb19/jstreffi/runtime/awicm-3.1/PICT/outdata/oifs/links 2010 2020 /p/scratch/chhb19/jstreffi/runtime/awicm-3.1/PICT/outdata/oifs/climate_performance_indicies/ /p/project/chhb19/streffing1/postprocessing/climatologies/Climate_obs_data_SEMMLER
+
 
 numyearm1=`expr ${endyear} - ${startyear}`
 echo $numyearm1
@@ -24,7 +27,7 @@ echo $numyear
 nummon=`expr ${numyear} \* 12`
 echo $nummon
 
-./prep_for_tidos_scripts.sh $origdir
+#./prep_for_tidos_scripts.sh $origdir
 
 #change to dir where output data are stored.
 mkdir -p $dir
@@ -75,9 +78,12 @@ EOF1
 done
 done
 
-cp /work/ollie/jstreffi/postprocessing/PI_oifs_fesom.job .
-cp /work/ollie/jstreffi/postprocessing/PI_oifs_fesom_sic.job .
 
-./PI_oifs_fesom.job
-./PI_oifs_fesom_sic.job
+cp /p/project/chhb19/streffing1/postprocessing/cmip5-climate-performance-indices/PI_oifs_fesom.job .
+cp /p/project/chhb19/streffing1/postprocessing/cmip5-climate-performance-indices/PI_oifs_fesom_sic.job .
+#cp /work/ollie/jstreffi/postprocessing/PI_oifs_fesom.job .
+#cp /work/ollie/jstreffi/postprocessing/PI_oifs_fesom_sic.job .
+
+./PI_oifs_fesom.job $obsdir
+./PI_oifs_fesom_sic.job $obsdir
 
